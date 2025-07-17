@@ -240,15 +240,8 @@ void CN105Climate::getSettingsFromResponsePacket() {
     if ((data[10] != 0) && (this->traits_.supports_swing_mode(climate::CLIMATE_SWING_HORIZONTAL))) {
         uint8_t wideVaneValue = data[10];
 
-        // 1. First, try to look up the full byte value. This works for models with unique codes (like i-see) and standard models.
-        const char* wideVaneSetting = lookupByteMapValue(WIDEVANE_MAP, WIDEVANE, 11, wideVaneValue, "wideVane reading (full byte)");
-
-        // 2. If the lookup failed (returned the default value at index 0) AND the raw value isn't actually that default value...
-        if (strcmp(wideVaneSetting, WIDEVANE_MAP[0]) == 0 && wideVaneValue != WIDEVANE[0]) {
-            // ...then this might be a model that uses a flag. Try again with a mask to extract the base value.
-            ESP_LOGD("Decoder", "Wide vane full byte value %d not found, trying with 0x0F mask...", wideVaneValue);
-            wideVaneSetting = lookupByteMapValue(WIDEVANE_MAP, WIDEVANE, 11, wideVaneValue & 0x0F, "wideVane reading (masked)");
-        }
+        // Use the mask 0x0F to extract the base value
+        const char* wideVaneSetting = lookupByteMapValue(WIDEVANE_MAP, WIDEVANE, WIDEVANE_TOTAL_STATES, wideVaneValue & 0x0F, "wideVane reading (masked)");
 
         receivedSettings.wideVane = wideVaneSetting;
         this->wideVaneAdj = (data[10] & 0xF0) == 0x80 ? true : false;
@@ -610,7 +603,7 @@ void CN105Climate::checkWideVaneSettings(heatpumpSettings& settings, bool update
 
     /* ******** HANDLE MITSUBISHI VANE CHANGES ********
      * VANE_MAP[7]        = {"AUTO", "1", "2", "3", "4", "5", "SWING"};
-     * WIDEVANE_MAP[11]   = { "<<", "<",  "|",  ">",  ">>", "<>", "SWING", "INDIRECT", "DIRECT", "EVEN", "OFF" }
+     * WIDEVANE_MAP[7]    = { "<<", "<",  "|",  ">",  ">>", "<>", "SWING" }
      */
 
     if (this->hasChanged(currentSettings.wideVane, settings.wideVane, "wideVane")) {    // widevane setting change ?
