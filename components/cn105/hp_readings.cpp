@@ -265,6 +265,20 @@ void CN105Climate::getSettingsFromResponsePacket() {
     this->heatpumpUpdate(receivedSettings);
 }
 
+void CN105Climate::getMoreOptionsFromResponsePacket() {
+    heatpumpOptions receivedOptions{};
+    ESP_LOGD("Decoder", "[0x42 is HVAC Options]");
+
+    receivedOptions.airPurifier = lookupByteMapValue(POWER_MAP, POWER, 2, data[1], "air purifier");
+    receivedOptions.nightMode = lookupByteMapValue(POWER_MAP, POWER, 2, data[2], "night mode");
+
+    ESP_LOGI("Decoder", "[Air Purifier: %s]", receivedOptions.airPurifier);
+    ESP_LOGI("Decoder", "[Night Mode: %s]", receivedOptions.nightMode);
+
+    // Update the current options
+    // this->currentOptions = receivedOptions;
+}
+
 void CN105Climate::getRoomTemperatureFromResponsePacket() {
 
     heatpumpStatus receivedStatus{};
@@ -419,7 +433,7 @@ void CN105Climate::getDataFromResponsePacket() {
         // reset the powerRequestWithoutResponses to 0 as we had a response
         this->powerRequestWithoutResponses = 0;
 
-        this->terminateCycle();
+        this->buildAndSendRequestPacket(RQST_PKT_OPTIONS);
         break;
 
     case 0x10:
@@ -444,6 +458,12 @@ void CN105Climate::getDataFromResponsePacket() {
         }
     }
              break;
+    case 0x42:
+        ESP_LOGD("Decoder", "66: Receiving HVAC Options (beta)");
+        // FC 62 01 30 10 42 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 1A
+        this->getMoreOptionsFromResponsePacket();
+        this->terminateCycle();
+        break;
 
     default:
         ESP_LOGW("Decoder", "packet type [%02X] <-- unknown and unexpected", data[0]);

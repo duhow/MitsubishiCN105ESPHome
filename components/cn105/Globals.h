@@ -117,6 +117,7 @@ static const int RQST_PKT_TIMERS = 3;
 static const int RQST_PKT_STATUS = 4;
 static const int RQST_PKT_STANDBY = 5;
 static const int RQST_PKT_UNKNOWN = 2;
+static const int RQST_PKT_OPTIONS = 0x42;
 
 const uint8_t ESPMHP_MIN_TEMPERATURE = 16; //16
 const uint8_t ESPMHP_MAX_TEMPERATURE = 26; //31
@@ -268,4 +269,9 @@ struct heatpumpStatus {
     bool operator!=(const heatpumpStatus& other) const {
         return !(*this == other);
     }
+};
+
+struct heatpumpOptions {
+    const char* airPurifier;
+    const char* nightMode;
 };

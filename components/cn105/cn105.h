@@ -218,6 +218,7 @@ namespace esphome {
         void getAutoModeStateFromResponsePacket(); //NET added
         void getPowerFromResponsePacket(); //NET added
         void getSettingsFromResponsePacket();
+        void getMoreOptionsFromResponsePacket();
         void getRoomTemperatureFromResponsePacket();
         void getOperatingAndCompressorFreqFromResponsePacket();
 
