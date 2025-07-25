@@ -41,14 +41,15 @@ static const int INFOHEADER_LEN = 5;
 static const uint8_t INFOHEADER[INFOHEADER_LEN] = { 0xfc, 0x42, 0x01, 0x30, 0x10 };
 
 
-static const int INFOMODE_LEN = 6;
+static const int INFOMODE_LEN = 7;
 static const uint8_t INFOMODE[INFOMODE_LEN] = {
   0x02, // request a settings packet - RQST_PKT_SETTINGS
   0x03, // request the current room temp - RQST_PKT_ROOM_TEMP
   0x04, // unknown
   0x05, // request the timers - RQST_PKT_TIMERS
   0x06, // request status - RQST_PKT_STATUS
-  0x09  // request standby mode (maybe?) RQST_PKT_STANDBY
+  0x09, // request standby mode (maybe?) RQST_PKT_STANDBY
+  0x42  // request more options - RQST_PKT_OPTIONS
 };
 
 static const int RCVD_PKT_NONE = -1;
@@ -117,7 +118,7 @@ static const int RQST_PKT_TIMERS = 3;
 static const int RQST_PKT_STATUS = 4;
 static const int RQST_PKT_STANDBY = 5;
 static const int RQST_PKT_UNKNOWN = 2;
-static const int RQST_PKT_OPTIONS = 66;
+static const int RQST_PKT_OPTIONS = 6;
 
 const uint8_t ESPMHP_MIN_TEMPERATURE = 16; //16
 const uint8_t ESPMHP_MAX_TEMPERATURE = 26; //31
